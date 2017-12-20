@@ -1,0 +1,13 @@
+{% extends "pythonathon_v3/base.html" %}
+
+{% block content %}
+{% if latest_solution_list %}
+    <ul>
+    {% for solution in latest_solution_list %}
+        <li><a href="{% url 'ctf:question' question.id %}">Player {{ solution.user.username }} has solved problem "{{ solution.question.name }}" for {{ solution.net_score }} points!</a></li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>Nobody's solved any problems yet. Be the first!</p>
+{% endif %}
+{% endblock %}
