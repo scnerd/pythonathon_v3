@@ -2,15 +2,7 @@ from django.db import models
 from django.contrib.auth import get_user_model
 
 # Create your models here.
-class _NamedObj:
-    def __repr__(self):
-        return "<{} '{}'>".format(type(self).__name__, self.name)
-
-    def __str__(self):
-        return self.name
-
-
-class Question(models.Model, _NamedObj):
+class Question(models.Model):
     name = models.TextField()
     full_text = models.TextField()
     hint = models.TextField(blank=True, null=True)
@@ -22,10 +14,27 @@ class Question(models.Model, _NamedObj):
     requires = models.ForeignKey('Question', on_delete=models.SET_NULL, related_name='questions_required_by', blank=True, null=True)
     category = models.ForeignKey('Category', on_delete=models.SET_NULL, related_name='questions', null=True)
 
+    def check_answer(self, answer):
+        target = self.answer
+        if not self.case_sensitive:
+            target = self.answer.lower()
+            answer = answer.lower()
+        return target.strip() == answer.strip()
 
-class Category(models.Model, _NamedObj):
+    def solved_by(self, user):
+        res = self.solutions.filter(user=user, success=True)[:1]
+        return res[0] if res else None
+
+    def __str__(self):
+        return "Question {}: '{}'".format(self.id, self.name)
+
+
+class Category(models.Model):
     name = models.TextField()
     requires = models.ForeignKey('Question', on_delete=models.SET_NULL, related_name='categories_required_by', blank=True, null=True)
+
+    def __str__(self):
+        return "Category {}: '{}'".format(self.id, self.name)
 
 
 class HasSeenHint(models.Model):
@@ -35,7 +44,7 @@ class HasSeenHint(models.Model):
 
 class Solution(models.Model):
     submission = models.TextField()
-    timestamp = models.DateTimeField()
+    timestamp = models.DateTimeField(auto_now_add=True, blank=True)
     success = models.BooleanField()
 
     user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, related_name='solutions')

@@ -1,0 +1,20 @@
+{% extends "pythonathon_v3/base.html" %}
+
+{% block content %}
+<h1>{{ category.name }}</h1>
+
+<table class="table-striped">
+    <TR>
+        <th>Question</th>
+        <th>Points earned (if solved)</th>
+    </TR>
+    {% for q, sol in question_solution_pairs %}
+    <TR>
+        <TD class="c1">
+            <a href="{% url 'ctf:question' q.id %}">{{ q.name }}</a>
+        </TD>
+        <TD class="c2">{% if sol %}{{ sol.net_score }}{% else %}Not yet solved{% endif %}</TD>
+    </TR>
+    {% endfor %}
+</table>
+{% endblock %}

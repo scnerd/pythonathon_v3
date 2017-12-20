@@ -3,10 +3,6 @@
 {% block content %}
 <h1>{{ question.name }}</h1>
 
-{% if solution %}
-<div class="alert alert-success">You've completed this solution for {{ solution.net_score }} points!</div>
-{% endif %}
-
 {{ question.full_text }}
 
 <form action="{% url 'ctf:solve' question.id %}" method="post">

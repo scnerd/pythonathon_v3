@@ -21,7 +21,6 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('name', models.TextField()),
             ],
-            bases=(models.Model, ctf.models._NamedObj),
         ),
         migrations.CreateModel(
             name='Question',
@@ -37,7 +36,6 @@ class Migration(migrations.Migration):
                 ('category', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='questions', to='ctf.Category')),
                 ('requires', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='questions_required_by', to='ctf.Question')),
             ],
-            bases=(models.Model, ctf.models._NamedObj),
         ),
         migrations.CreateModel(
             name='Solution',

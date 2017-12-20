@@ -1,8 +1,8 @@
 from django.shortcuts import render
 
 # Create your views here.
-from django.http import HttpResponse
-from django.shortcuts import render, get_object_or_404
+from django.http import HttpResponse, HttpResponseRedirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
 from .models import *
@@ -19,7 +19,13 @@ def index(request):
 @login_required()
 def question_view(request, question_id):
     q = get_object_or_404(Question, id=question_id)
-    return render(request, 'ctf/question.html', {'question': q})
+    user = request.user
+    solution = q.solved_by(user)
+    context = {
+        'question': q,
+        'solution': solution,
+    }
+    return render(request, 'ctf/question.html', context)
 
 
 @login_required()
@@ -27,5 +33,27 @@ def submit_solution(request, question_id):
     q = get_object_or_404(Question, id=question_id)
     user = request.user
     provided_answer = request.POST['answer']
-    print(provided_answer)
-    pass
+    sol = Solution(question=q, user=user, submission=provided_answer, success=q.check_answer(provided_answer))
+    sol.save()
+
+    return redirect(question_view, question_id=question_id)
+
+
+@login_required()
+def problem_overview(request):
+    context = {'categories': Category.objects.all()}
+    return render(request, 'ctf/problems.html', context)
+
+
+@login_required()
+def category_view(request, category_id):
+    cat = get_object_or_404(Category, id=category_id)
+    print(cat.questions.all())
+    question_solution_pairs = [(q, q.solved_by(request.user)) for q in cat.questions.all()]
+    print(question_solution_pairs)
+    context = {
+        'category': cat,
+        'question_solution_pairs': question_solution_pairs,
+    }
+
+    return render(request, 'ctf/category.html', context)
