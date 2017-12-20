@@ -4,10 +4,10 @@
 
 {% block content %}
 {% if latest_solution_list %}
-<table class="table-striped">
+<table class="table">
     {% for solution in latest_solution_list %}
     <tr>
-        <td><a href="{% url 'ctf:question' solution.question.id %}">Player {{ solution.user.username }} has solved
+        <td><a href="{% url 'ctf:question' solution.question.id %}">{{ solution.user.username }} has solved
             problem "{{ solution.question.name }}" for {{ solution.net_score }} points!</a></td>
     </tr>
     {% endfor %}
