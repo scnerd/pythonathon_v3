@@ -14,6 +14,7 @@ def index(request):
         'latest_solution_list': latest_solutions,
     }
     return render(request, 'ctf/index.html', context)
+    # return redirect('ctf:problems')
 
 
 @login_required()
@@ -36,12 +37,17 @@ def submit_solution(request, question_id):
     sol = Solution(question=q, user=user, submission=provided_answer, success=q.check_answer(provided_answer))
     sol.save()
 
-    return redirect(question_view, question_id=question_id)
+    return redirect('ctf:question', question_id=question_id)
 
 
 @login_required()
 def problem_overview(request):
-    context = {'categories': Category.objects.all()}
+    cats = [(category,
+             len(category.questions.all()),
+             len([q for q in category.questions.all() if q.solved_by(request.user)])
+             )
+            for category in Category.objects.all()]
+    context = {'categories': cats}
     return render(request, 'ctf/problems.html', context)
 
 

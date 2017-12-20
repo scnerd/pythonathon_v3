@@ -1,11 +1,10 @@
 <!DOCTYPE html>
-{% load menu %}
 <html lang="en">
 <head>
     {% block head %}
     <!-- Required meta tags -->
     <meta charset="utf-8">
-    <!--<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">-->
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css"
@@ -15,12 +14,13 @@
     {% endblock %}
 </head>
 <body>
-{% block menu %} {% generate_menu %} {% endblock %}
+<div class="wrapper">
+<!--This is where you should include the menu-->
 
 {% block content %}
 
 {% endblock %}
-
+</div>
 <!-- jQuery first, then Tether, then Bootstrap JS. -->
 <script src="https://code.jquery.com/jquery-3.1.1.slim.min.js"
         integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n"

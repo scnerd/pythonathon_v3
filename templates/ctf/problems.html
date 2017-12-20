@@ -1,13 +1,18 @@
 {% extends "pythonathon_v3/base.html" %}
 
 {% block content %}
-<h1>{{ question.name }}</h1>
-
-{{ question.full_text }}
-
-<form action="{% url 'ctf:solve' question.id %}" method="post">
-{% csrf_token %}
-<input type="text" name="answer" />
-<input type="submit" value="Submit" />
-</form>
+<table class="table-striped">
+    <TR>
+        <th>Category</th>
+        <th>Total problems</th>
+        <th>Problems solved</th>
+    </TR>
+    {% for cat, total, solved in categories %}
+    <TR>
+        <TD><a href="{% url 'ctf:category' cat.id %}">{{ cat.name }}</a></TD>
+        <TD class="text-right">{{ total }}</TD>
+        <TD class="text-right">{{ solved }}</TD>
+    </TR>
+    {% endfor %}
+</table>
 {% endblock %}
