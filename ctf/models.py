@@ -28,11 +28,15 @@ class Category(models.Model, _NamedObj):
     requires = models.ForeignKey('Question', on_delete=models.SET_NULL, related_name='categories_required_by', blank=True, null=True)
 
 
+class HasSeenHint(models.Model):
+    user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, related_name='used_hints')
+    question = models.ForeignKey('Question', on_delete=models.CASCADE, related_name='hinted_users')
+
+
 class Solution(models.Model):
     submission = models.TextField()
     timestamp = models.DateTimeField()
     success = models.BooleanField()
-    used_hint = models.BooleanField()
 
     user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, related_name='solutions')
     question = models.ForeignKey('Question', on_delete=models.CASCADE, related_name='solutions')
@@ -41,4 +45,5 @@ class Solution(models.Model):
     def net_score(self):
         if not self.success:
             return 0
-        return self.question.points - (self.question.hint_cost if self.used_hint else 0)
+        hints = self.user.used_hints.filter(question=self.question)
+        return self.question.points - (self.question.hint_cost if len(hints) else 0)

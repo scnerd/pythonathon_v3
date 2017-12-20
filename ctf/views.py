@@ -25,6 +25,7 @@ def question_view(request, question_id):
 @login_required()
 def submit_solution(request, question_id):
     q = get_object_or_404(Question, id=question_id)
+    user = request.user
     provided_answer = request.POST['answer']
     print(provided_answer)
     pass
