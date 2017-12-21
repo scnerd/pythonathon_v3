@@ -9,7 +9,7 @@ from .models import *
 
 
 def index(request):
-    latest_solutions = Solution.objects.order_by('-timestamp')[:5]
+    latest_solutions = Solution.objects.filter(success=True).order_by('-timestamp')[:5]
     context = {
         'latest_solution_list': latest_solutions,
     }
@@ -33,6 +33,9 @@ def question_view(request, question_id):
 def submit_solution(request, question_id):
     q = get_object_or_404(Question, id=question_id)
     user = request.user
+    if q.solved_by(user):
+        return redirect('ctf:question', question_id=question_id)
+
     provided_answer = request.POST['answer']
     sol = Solution(question=q, user=user, submission=provided_answer, success=q.check_answer(provided_answer))
     sol.save()
