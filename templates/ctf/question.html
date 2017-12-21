@@ -1,17 +1,18 @@
 {% extends "pythonathon_v3/base.html" %}
 
 {% block content %}
-<h1>{{ question.name }}</h1>
-
-{% if solution %}
-<div class="alert alert-success">You've completed this solution for {{ solution.net_score }} points!</div>
-{% endif %}
+<h1><a href="{% url 'ctf:category' question.category.id %}">{{ question.category.name }}</a> / {{ question.name }}</h1>
 
 {{ question.full_text }}
 
+{% if solution %}
+<div class="alert alert-success">You've solved this problem for {{ solution.net_score }} points!</div>
+{% else %}
 <form action="{% url 'ctf:solve' question.id %}" method="post">
 {% csrf_token %}
 <input type="text" name="answer" />
 <input type="submit" value="Submit" />
 </form>
+{% endif %}
+
 {% endblock %}
