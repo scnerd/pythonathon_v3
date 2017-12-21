@@ -1,10 +1,10 @@
 from django.shortcuts import render
 
 # Create your views here.
-from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from .models import *
 
 
@@ -78,3 +78,22 @@ def user_profile(request, user_id=None):
         'is_self': user == request.user,
     }
     return render(request, 'ctf/profile.html', context)
+
+
+def signup(request):
+    if not request.user.is_anonymous:
+        redirect('ctf:index')
+
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            username = form.cleaned_data.get('username')
+            raw_password = form.cleaned_data.get('password1')
+            user = authenticate(username=username, password=raw_password)
+            login(request, user)
+            return redirect('ctf:index')
+    else:
+        form = UserCreationForm()
+        context = {'form': form}
+        return render(request, 'registration/signup.html', context)

@@ -10,7 +10,7 @@
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css"
           integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
-    
+
     <title>{% block title %}{% endblock %}</title>
     {% endblock %}
 </head>
@@ -33,6 +33,7 @@
                 <ul class="navbar-nav">
                     {% if request.user.is_anonymous %}
                     <li class="nav-item"><a href="{% url 'login' %}" class="nav-link">Log in</a></li>
+                    <li class="nav-item"><a href="{% url 'ctf:signup' %}" class="nav-link">Sign up</a></li>
                     {% else %}
                     {% if request.user.is_superuser %}
                     <li class="nav-item"><a href="{% url 'admin:index' %}" class="nav-link">Admin</a></li>

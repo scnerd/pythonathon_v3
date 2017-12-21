@@ -11,4 +11,5 @@ urlpatterns = [
     path('submit_solution/<int:question_id>', views.submit_solution, name='solve'),
     path('profile', views.user_profile, name='my_profile'),
     path('profile/<int:user_id>', views.user_profile, name='profile'),
+    path('signup/', views.signup, name='signup')
 ]
