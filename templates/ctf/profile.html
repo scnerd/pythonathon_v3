@@ -1,0 +1,9 @@
+{% extends "pythonathon_v3/base.html" %}
+
+{% block content %}
+This is {{ user.username }}'s profile!
+
+{% if is_self %}
+Oh hey! It's you! Welcome to your own profile!
+{% endif %}
+{% endblock %}

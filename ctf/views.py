@@ -63,3 +63,15 @@ def category_view(request, category_id):
     }
 
     return render(request, 'ctf/category.html', context)
+
+
+@login_required()
+def user_profile(request, user_id=None):
+    if user_id is None:
+        user_id = request.user.id
+    user = get_object_or_404(get_user_model(), id=user_id)
+    context = {
+        'user': user,
+        'is_self': user == request.user,
+    }
+    return render(request, 'ctf/profile.html', context)

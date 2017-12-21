@@ -25,7 +25,7 @@ SECRET_KEY = '3ds#)t0=6y97$qihq96u6=8^bmb*tmyc**fn92kds_#rf0-jg&'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*.compute-1.amazonaws.com', 'pythonathon.davidmaxson.com', 'localhost']
 
 
 # Application definition
@@ -48,6 +48,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
 ROOT_URLCONF = 'pythonathon_v3.urls'
@@ -102,6 +103,7 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 LOGIN_URL = '/accounts/login'
+LOGIN_REDIRECT_URL = '/profile'
 
 
 # Internationalization
@@ -121,10 +123,8 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
 
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 STATIC_URL = '/static/'
-
-
-# Navigation menu
-
-MENU_SELECT_PARENTS = True
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+# STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)
 

@@ -31,7 +31,9 @@ class Question(models.Model):
 
 class Category(models.Model):
     name = models.TextField()
+
     requires = models.ForeignKey('Question', on_delete=models.SET_NULL, related_name='categories_required_by', blank=True, null=True)
+    competition = models.ForeignKey('Competition', on_delete=models.SET_NULL, related_name='categories', blank=True, null=True)
 
     def __str__(self):
         return "Category {}: '{}'".format(self.id, self.name)
@@ -56,3 +58,9 @@ class Solution(models.Model):
             return 0
         hints = self.user.used_hints.filter(question=self.question)
         return self.question.points - (self.question.hint_cost if len(hints) else 0)
+
+
+class Competition(models.Model):
+    name = models.TextField()
+    start = models.DateTimeField()
+    end = models.DateTimeField()
