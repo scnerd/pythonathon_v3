@@ -29,6 +29,15 @@ class Question(models.Model):
         return "Question {}: '{}'".format(self.id, self.name)
 
 
+class File(models.Model):
+    name = models.TextField()
+    content = models.BinaryField()
+    question = models.ForeignKey('Question', on_delete=models.CASCADE, related_name='files')
+
+    def __str__(self):
+        return "File {}: '{}'".format(self.id, self.name)
+
+
 class Category(models.Model):
     name = models.TextField()
 
