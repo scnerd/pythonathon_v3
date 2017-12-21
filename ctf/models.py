@@ -31,7 +31,7 @@ class Question(models.Model):
 
 class File(models.Model):
     name = models.TextField()
-    content = models.BinaryField()
+    content = models.FileField()
     question = models.ForeignKey('Question', on_delete=models.CASCADE, related_name='files')
 
     def __str__(self):
