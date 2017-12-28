@@ -5,9 +5,10 @@ services:
     expose: 
      - 8000
   proxy:
-    build: ssl_terminator
+    image: ployst/nginx-ssl-proxy
     environment:
-     - ENABLE_SSL=1
+     - ENABLE_SSL=true
+     - ENABLE_BASIC_AUTH=false
      - TARGET_SERVICE=ctf
     volumes:
      - /etc/nginx/ssl/nginx.crt:/etc/secrets/proxycert
