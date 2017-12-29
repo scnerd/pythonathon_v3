@@ -2,18 +2,17 @@ version: '3'
 services:
   ctf:
     build: pythonathon_ctf_server
-    expose: 
+    restart: always
+    expose:
      - 8000
   proxy:
-    image: ployst/nginx-ssl-proxy
+    image: danieldent/nginx-ssl-proxy
+    restart: always
     environment:
-     - ENABLE_SSL=true
-     - ENABLE_BASIC_AUTH=false
-     - TARGET_SERVICE=ctf
-    volumes:
-     - /etc/nginx/ssl/nginx.crt:/etc/secrets/proxycert
-     - /etc/nginx/ssl/nginx.key:/etc/secrets/proxykey
-     - /etc/nginx/ssl/dhparam.pem:/etc/secrets/dhparam
+      UPSTREAM: ctf:8000
+      SERVERNAME: pythonathon.davidmaxson.name
     ports:
-     - "80:80"
-     - "443:443"
+      - "80:80"
+      - "443:443"
+    volumes:
+      - "/etc/letsencrypt"
