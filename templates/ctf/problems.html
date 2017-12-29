@@ -9,9 +9,9 @@
     </TR>
     {% for cat, total, solved in categories %}
     <TR>
-        <TD><a href="{% url 'ctf:category' cat.id %}">{{ cat.name }}</a></TD>
-        <TD class="text-right">{{ total }}</TD>
-        <TD class="text-right">{{ solved }}</TD>
+        <td><a href="{% url 'ctf:category' cat.id %}">{{ cat.name }}</a></td>
+        <td class="text-right">{{ total }}</td>
+        <td class="text-right">{{ solved }}</td>
     </TR>
     {% endfor %}
 </table>

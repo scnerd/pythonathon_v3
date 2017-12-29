@@ -4,15 +4,15 @@
 <h1>{{ category.name }}</h1>
 
 <table class="table-striped">
-    <TR>
+    <tr>
         <th>Question</th>
         <th>Points earned (if solved)</th>
-    </TR>
+    </tr>
     {% for q, sol in question_solution_pairs %}
-    <TR>
-        <TD><a href="{% url 'ctf:question' q.id %}">{{ q.name }}</a></TD>
-        <TD class="text-right">{% if sol %}{{ sol.net_score }}{% else %}Not yet solved{% endif %}</TD>
-    </TR>
+    <tr>
+        <td><a href="{% url 'ctf:question' q.id %}">{{ q.name }}</a></td>
+        <td class="text-right">{% if sol %}{{ sol.net_score }}{% else %}Not yet solved{% endif %}</td>
+    </tr>
     {% endfor %}
 </table>
 {% endblock %}

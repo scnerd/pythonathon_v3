@@ -1,0 +1,18 @@
+{% extends "pythonathon_v3/base.html" %}
+
+{% block content %}
+<table class="table-striped">
+    <tr>
+        <th>Username</th>
+        <th>Number of problems solved</th>
+        <th>Total score</th>
+    </tr>
+    {% for user, num_problems, total_score in users %}
+    <tr>
+        <td><a href="{% url 'ctf:profile' user.id %}">{{ user.username }}</a></td>
+        <td class="text-right">{{ num_problems }}</td>
+        <td class="text-right">{{ total_score }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}
