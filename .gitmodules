@@ -1,3 +1,9 @@
 [submodule "ssl_terminator"]
 	path = ssl_terminator
 	url = https://github.com/GoogleCloudPlatform/nginx-ssl-proxy
+[submodule "auto-ssl-proxy"]
+	path = auto-ssl-proxy
+	url = https://github.com/scnerd/auto-ssl-proxy
+[submodule "docker-nginx-ssl-proxy"]
+	path = docker-nginx-ssl-proxy
+	url = https://github.com/scnerd/docker-nginx-ssl-proxy
