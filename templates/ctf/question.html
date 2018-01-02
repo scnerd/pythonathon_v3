@@ -8,11 +8,9 @@
 {% if solution %}
 <div class="alert alert-success">You've solved this problem for {{ solution.net_score }} points!</div>
 {% else %}
-<form action="{% url 'ctf:solve' question.id %}" method="post">
-{% csrf_token %}
-<input type="text" name="answer" />
-<input type="submit" value="Submit" />
-</form>
+{% bootstrap_form_errors form %}
+{% bootstrap_form form %}
+{% bootstrap_button 'Submit' button_type="submit" button_class="btn-primary" %}
 {% endif %}
 
 {% endblock %}

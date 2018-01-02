@@ -21,6 +21,7 @@ from django.contrib.auth import views as auth_views
 urlpatterns = [
     path('', include('ctf.urls')),
     path('admin/', admin.site.urls),
+    # path('account/', include('account.urls')),
     path('accounts/', include('django.contrib.auth.urls')),
     path('login/', auth_views.login, name='login'),
     path('logout/', auth_views.LogoutView.as_view(next_page='ctf:index'), name='logout'),

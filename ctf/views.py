@@ -5,6 +5,7 @@ from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from .models import *
+from .forms import *
 
 
 def viewable_questions(user):
@@ -26,10 +27,26 @@ def question_view(request, question_id):
     user = request.user
     if not q.is_viewable(user):
         return HttpResponseForbidden()
-    solution = q.solved_by(user)
+
+    sol = None
+    if request.method == 'POST':
+        form = SubmissionForm(request.POST)
+        if form.is_valid():
+            correct = q.check_answer(provided_answer)
+            sol = Solution(question=q, user=user, submission=provided_answer, success=correct)
+            sol.save()
+
+            if not correct:
+                form.add_error(None, 'Incorrect answer')
+    else:
+        sol = q.solved_by(user)
+        form = SubmissionForm()
+
+
     context = {
         'question': q,
-        'solution': solution,
+        'solution': sol,
+        'form': form
     }
     return render(request, 'ctf/question.html', context)
 

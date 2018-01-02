@@ -38,7 +38,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    # 'account',
+    # 'django.contrib.sites',
+    'bootstrap4',
 ]
+
+# SITE_ID = 1
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -49,6 +54,9 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
+    # 'account.middleware.LocaleMiddleware',
+    # 'account.middleware.TimezoneMiddleware',
+    # 'account.middleware.ExpiredPasswordMiddleware',
 ]
 
 ROOT_URLCONF = 'pythonathon_v3.urls'
@@ -65,6 +73,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'django.template.context_processors.request',
+                # 'account.context_processors.account',
             ],
         },
     },
@@ -77,6 +86,14 @@ WSGI_APPLICATION = 'pythonathon_v3.wsgi.application'
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
 
 DATABASES = {
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.postgresql_psycopg2',
+    #     'NAME': 'pythonathon',
+    #     'USER': 'postgres',
+    #     'PASSWORD': open(os.environ.get('PASSWORD_FILE', '/dev/null')).read().strip(),
+    #     'HOST': 'db',
+    #     'PORT': '',
+    # }
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
@@ -104,6 +121,9 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LOGIN_URL = '/accounts/login'
 LOGIN_REDIRECT_URL = '/profile'
+
+# ACCOUNT_PASSWORD_USE_HISTORY = True
+# ACCOUNT_PASSWORD_EXPIRY = 60*60*24*365  # one year
 
 
 # Internationalization
