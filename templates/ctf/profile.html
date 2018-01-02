@@ -1,9 +1,35 @@
 {% extends "pythonathon_v3/base.html" %}
 
 {% block content %}
+<div class="container">
 This is {{ user.username }}'s profile!
 
 {% if is_self %}
 Oh hey! It's you! Welcome to your own profile!
 {% endif %}
+
+    <table class="table-striped">
+        <tr>
+            <th>Category</th>
+            <th>Question</th>
+            {% if is_self %}
+            <th>Submission</th>
+            {% endif %}
+            <th>Points</th>
+        </tr>
+        {% for solution in solutions %}
+        <tr>
+            <td>{{ solution.question.category.name }}</td>
+            <td>{{ solution.question.name }}</td>
+            {% if is_self %}
+            <td>{{ solution.submission }}</td>
+            {% endif %}
+            <td class="text-right">{{ solution.net_score }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+
+
+
 {% endblock %}

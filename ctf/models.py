@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth import get_user_model
+import datetime
 
 # Create your models here.
 class Question(models.Model):
@@ -10,9 +11,14 @@ class Question(models.Model):
     answer = models.TextField(blank=True)
     case_sensitive = models.BooleanField(default=False)
     points = models.IntegerField(default=1)
+    sort_order = models.IntegerField(default=-1)
 
     requires = models.ForeignKey('Question', on_delete=models.SET_NULL, related_name='questions_required_by', blank=True, null=True)
     category = models.ForeignKey('Category', on_delete=models.SET_NULL, related_name='questions', null=True)
+
+    @property
+    def order(self):
+        return self.sort_order if self.sort_order != -1 else self.id - 2**32
 
     def check_answer(self, answer):
         target = self.answer
@@ -21,12 +27,21 @@ class Question(models.Model):
             answer = answer.lower()
         return target.strip() == answer.strip()
 
+    def is_viewable(self, user):
+        allowed = bool(self.requires is None or
+                       self.requires.solved_by(user) or
+                       self.solutions.filter(user=user, success=True))
+        live = bool(self.category is None or
+                    self.category.competition is None or
+                    self.category.competition.is_live)
+        return allowed and live
+
     def solved_by(self, user):
         res = self.solutions.filter(user=user, success=True)[:1]
         return res[0] if res else None
 
     def __str__(self):
-        return "Question {}: '{}'".format(self.id, self.name)
+        return "{}: '{}'".format(self.category.name, self.name)
 
 
 class File(models.Model):
@@ -40,9 +55,14 @@ class File(models.Model):
 
 class Category(models.Model):
     name = models.TextField()
+    sort_order = models.IntegerField(default=-1)
 
     requires = models.ForeignKey('Question', on_delete=models.SET_NULL, related_name='categories_required_by', blank=True, null=True)
     competition = models.ForeignKey('Competition', on_delete=models.SET_NULL, related_name='categories', blank=True, null=True)
+
+    @property
+    def order(self):
+        return self.sort_order if self.sort_order != -1 else self.id - 2**32
 
     def __str__(self):
         return "Category {}: '{}'".format(self.id, self.name)
@@ -73,3 +93,7 @@ class Competition(models.Model):
     name = models.TextField()
     start = models.DateTimeField()
     end = models.DateTimeField()
+
+    @property
+    def is_live(self):
+        return self.start <= datetime.datetime.now() <= self.end

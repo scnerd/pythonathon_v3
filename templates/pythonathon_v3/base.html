@@ -28,10 +28,6 @@
                     <li class="nav-item"><a href="{% url 'ctf:index' %}" class="nav-link">Home</a></li>
                     <li class="nav-item"><a href="{% url 'ctf:problems' %}" class="nav-link">Problems</a></li>
                     <li class="nav-item"><a href="{% url 'ctf:profiles' %}" class="nav-link">Profiles</a></li>
-                </ul>
-            </div>
-            <div class="navbar-collapse collapse ml-auto" id="navbarNav">
-                <ul class="navbar-nav">
                     {% if request.user.is_anonymous %}
                     <li class="nav-item"><a href="{% url 'login' %}" class="nav-link">Log in</a></li>
                     <li class="nav-item"><a href="{% url 'ctf:signup' %}" class="nav-link">Sign up</a></li>

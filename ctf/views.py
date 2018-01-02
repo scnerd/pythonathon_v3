@@ -1,11 +1,14 @@
-from django.shortcuts import render
-
 # Create your views here.
 from django.shortcuts import render, redirect, get_object_or_404
+from django.http import HttpResponseForbidden
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from .models import *
+
+
+def viewable_questions(user):
+    return [q for q in Question.objects.all() if q.is_viewable(user)]
 
 
 def index(request):
@@ -21,6 +24,8 @@ def index(request):
 def question_view(request, question_id):
     q = get_object_or_404(Question, id=question_id)
     user = request.user
+    if not q.is_viewable(user):
+        return HttpResponseForbidden()
     solution = q.solved_by(user)
     context = {
         'question': q,
@@ -33,6 +38,8 @@ def question_view(request, question_id):
 def submit_solution(request, question_id):
     q = get_object_or_404(Question, id=question_id)
     user = request.user
+    if not q.is_viewable(user):
+        return HttpResponseForbidden()
     if q.solved_by(user):
         return redirect('ctf:question', question_id=question_id)
 
@@ -45,11 +52,13 @@ def submit_solution(request, question_id):
 
 @login_required()
 def problem_overview(request):
+    questions = viewable_questions(request.user)
+    categories = {q.category for q in questions}
     cats = [(category,
              len(category.questions.all()),
              len([q for q in category.questions.all() if q.solved_by(request.user)])
              )
-            for category in Category.objects.all()]
+            for category in sorted(categories, key=lambda c: c.order)]
     context = {'categories': cats}
     return render(request, 'ctf/problems.html', context)
 
@@ -57,9 +66,8 @@ def problem_overview(request):
 @login_required()
 def category_view(request, category_id):
     cat = get_object_or_404(Category, id=category_id)
-    print(cat.questions.all())
-    question_solution_pairs = [(q, q.solved_by(request.user)) for q in cat.questions.all()]
-    print(question_solution_pairs)
+    questions = sorted([q for q in cat.questions.all() if q.is_viewable(request.user)], key=lambda q: q.order)
+    question_solution_pairs = [(q, q.solved_by(request.user)) for q in questions]
     context = {
         'category': cat,
         'question_solution_pairs': question_solution_pairs,
@@ -85,9 +93,11 @@ def user_profile(request, user_id=None):
     if user_id is None:
         user_id = request.user.id
     user = get_object_or_404(get_user_model(), id=user_id)
+    solutions = user.solutions.order_by('-timestamp')
     context = {
         'user': user,
         'is_self': user == request.user,
+        'solutions': solutions,
     }
     return render(request, 'ctf/profile.html', context)
 
@@ -107,5 +117,5 @@ def signup(request):
             return redirect('ctf:index')
     else:
         form = UserCreationForm()
-        context = {'form': form}
-        return render(request, 'registration/signup.html', context)
+    context = {'form': form}
+    return render(request, 'registration/signup.html', context)
