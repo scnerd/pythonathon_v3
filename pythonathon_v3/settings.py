@@ -23,9 +23,9 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = '3ds#)t0=6y97$qihq96u6=8^bmb*tmyc**fn92kds_#rf0-jg&'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = bool(int(os.environ.get('DEBUGMODE', int(True))))
 
-ALLOWED_HOSTS = ['*.compute-1.amazonaws.com', 'pythonathon.davidmaxson.com', 'localhost']
+ALLOWED_HOSTS = ['*.compute-1.amazonaws.com', 'pythonathon.davidmaxson.name', 'localhost']
 
 
 # Application definition
