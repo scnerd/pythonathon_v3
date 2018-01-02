@@ -3,16 +3,20 @@
 {% block content %}
 <h1>{{ category.name }}</h1>
 
-<table class="table-striped">
+<table class="table table-striped">
+    <thead>
     <tr>
         <th>Question</th>
         <th>Points earned (if solved)</th>
     </tr>
+    </thead>
+    <tbody>
     {% for q, sol in question_solution_pairs %}
     <tr>
         <td><a href="{% url 'ctf:question' q.id %}">{{ q.name }}</a></td>
-        <td class="text-right">{% if sol %}{{ sol.net_score }}{% else %}Not yet solved{% endif %}</td>
+        <td>{% if sol %}{{ sol.net_score }}{% else %}Not yet solved{% endif %}</td>
     </tr>
     {% endfor %}
+    </tbody>
 </table>
 {% endblock %}

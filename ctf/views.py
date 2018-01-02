@@ -4,6 +4,7 @@ from django.http import HttpResponseForbidden
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+from django.contrib import messages
 from .models import *
 from .forms import *
 
@@ -32,16 +33,20 @@ def question_view(request, question_id):
     if request.method == 'POST':
         form = SubmissionForm(request.POST)
         if form.is_valid():
-            correct = q.check_answer(provided_answer)
-            sol = Solution(question=q, user=user, submission=provided_answer, success=correct)
+            answer = form.cleaned_data['answer']
+            print("=" * 20 + answer)
+            correct = q.check_answer(answer)
+            sol = Solution(question=q, user=user, submission=answer, success=correct)
             sol.save()
 
-            if not correct:
-                form.add_error(None, 'Incorrect answer')
+            if correct:
+                messages.add_message(request, messages.SUCCESS, 'That was correct, good job!')
+            else:
+                messages.add_message(request, messages.WARNING, 'Incorrect answer')
+                sol = None
     else:
         sol = q.solved_by(user)
         form = SubmissionForm()
-
 
     context = {
         'question': q,
@@ -49,22 +54,6 @@ def question_view(request, question_id):
         'form': form
     }
     return render(request, 'ctf/question.html', context)
-
-
-@login_required()
-def submit_solution(request, question_id):
-    q = get_object_or_404(Question, id=question_id)
-    user = request.user
-    if not q.is_viewable(user):
-        return HttpResponseForbidden()
-    if q.solved_by(user):
-        return redirect('ctf:question', question_id=question_id)
-
-    provided_answer = request.POST['answer']
-    sol = Solution(question=q, user=user, submission=provided_answer, success=q.check_answer(provided_answer))
-    sol.save()
-
-    return redirect('ctf:question', question_id=question_id)
 
 
 @login_required()

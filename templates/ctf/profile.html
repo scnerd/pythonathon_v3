@@ -8,7 +8,8 @@ This is {{ user.username }}'s profile!
 Oh hey! It's you! Welcome to your own profile!
 {% endif %}
 
-    <table class="table-striped">
+    <table class="table table-striped">
+        <thead>
         <tr>
             <th>Category</th>
             <th>Question</th>
@@ -17,6 +18,8 @@ Oh hey! It's you! Welcome to your own profile!
             {% endif %}
             <th>Points</th>
         </tr>
+        </thead>
+        <tbody>
         {% for solution in solutions %}
         <tr>
             <td>{{ solution.question.category.name }}</td>
@@ -24,9 +27,10 @@ Oh hey! It's you! Welcome to your own profile!
             {% if is_self %}
             <td>{{ solution.submission }}</td>
             {% endif %}
-            <td class="text-right">{{ solution.net_score }}</td>
+            <td>{{ solution.net_score }}</td>
         </tr>
         {% endfor %}
+        </tbody>
     </table>
 </div>
 

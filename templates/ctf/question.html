@@ -1,4 +1,5 @@
 {% extends "pythonathon_v3/base.html" %}
+{% load bootstrap4 %}
 
 {% block content %}
 <h1><a href="{% url 'ctf:category' question.category.id %}">{{ question.category.name }}</a> / {{ question.name }}</h1>
@@ -8,9 +9,16 @@
 {% if solution %}
 <div class="alert alert-success">You've solved this problem for {{ solution.net_score }} points!</div>
 {% else %}
-{% bootstrap_form_errors form %}
+
+{% bootstrap_form_errors form layout='inline' %}
+<form action="{% url 'ctf:question' question.id %}" method="post">
+{% csrf_token %}
 {% bootstrap_form form %}
+{% buttons %}
 {% bootstrap_button 'Submit' button_type="submit" button_class="btn-primary" %}
+{% endbuttons %}
+</form>
+
 {% endif %}
 
 {% endblock %}

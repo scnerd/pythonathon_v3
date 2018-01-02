@@ -1,18 +1,22 @@
 {% extends "pythonathon_v3/base.html" %}
 
 {% block content %}
-<table class="table-striped">
-    <TR>
+<table class="table table-striped">
+    <thead>
+    <tr>
         <th>Category</th>
         <th>Total problems</th>
         <th>Problems solved</th>
-    </TR>
+    </tr>
+    </thead>
+    <tbody>
     {% for cat, total, solved in categories %}
-    <TR>
+    <tr>
         <td><a href="{% url 'ctf:category' cat.id %}">{{ cat.name }}</a></td>
-        <td class="text-right">{{ total }}</td>
-        <td class="text-right">{{ solved }}</td>
-    </TR>
+        <td>{{ total }}</td>
+        <td>{{ solved }}</td>
+    </tr>
     {% endfor %}
+    </tbody>
 </table>
 {% endblock %}
