@@ -41,7 +41,9 @@ class Question(models.Model):
         return res[0] if res else None
 
     def __str__(self):
-        return "{}: '{}'".format(self.category.name, self.name)
+        return "{}{}: '{}'".format(self.category.name,
+                                   '' if self.sort_order == -1 else ' ({})'.format(self.sort_order),
+                                   self.name)
 
 
 class File(models.Model):
