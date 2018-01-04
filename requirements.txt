@@ -1,6 +1,7 @@
 django
 psycopg2
 django-bootstrap4
+django-revproxy
 gunicorn
 whitenoise
 plotly

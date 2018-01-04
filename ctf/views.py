@@ -48,9 +48,11 @@ def question_view(request, question_id):
         sol = q.solved_by(user)
         form = SubmissionForm()
 
+    attempts = user.solutions.filter(question=q).order_by('-timestamp')
     context = {
         'question': q,
         'solution': sol,
+        'attempts': attempts,
         'form': form
     }
     return render(request, 'ctf/question.html', context)

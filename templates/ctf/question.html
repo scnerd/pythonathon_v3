@@ -16,8 +16,19 @@
 {% bootstrap_form form %}
 {% buttons %}
 {% bootstrap_button 'Submit' button_type="submit" button_class="btn-primary" %}
+{% bootstrap_button 'Hint' button_type="button" href="{% url 'ctf:hint' question.id %}" %}
 {% endbuttons %}
 </form>
+
+{% if attempts %}
+<h3>Your previous attempts</h3>
+<table class="table table-striped">
+    <tbody>
+    {% for att in attempts %}
+    <tr><td>{{ att.submission }}</td></tr>
+    {% endfor %}
+    </tbody>
+</table>
 
 {% endif %}
 
