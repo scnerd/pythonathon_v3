@@ -25,7 +25,9 @@ SECRET_KEY = '3ds#)t0=6y97$qihq96u6=8^bmb*tmyc**fn92kds_#rf0-jg&'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = bool(int(os.environ.get('DEBUGMODE', int(True))))
 
-ALLOWED_HOSTS = ['*.compute-1.amazonaws.com', 'pythonathon.davidmaxson.name', 'localhost']
+ALLOWED_HOSTS = ['localhost']
+if 'VIRTUAL_HOST' in os.environ:
+    ALLOWED_HOSTS += [h.strip() for h in os.environ['VIRTUAL_HOST'].split(',')]
 
 
 # Application definition
