@@ -1,5 +1,7 @@
 {% extends "pythonathon_v3/base.html" %}
 
+{% block title %}Profile: {{ user.username }}{% endblock %}
+
 {% block content %}
 <div class="container">
 This is {{ user.username }}'s profile!
