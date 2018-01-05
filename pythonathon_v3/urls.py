@@ -17,17 +17,13 @@ Including another URLconf
 from django.urls import include, path
 from django.contrib import admin
 from django.contrib.auth import views as auth_views
-from revproxy.views import ProxyView
-import os
-
-JUPYTERHUB = 'http://{}/'.format(os.environ.get('JUPYTERHUB_HOST'))
 
 urlpatterns = [
     path('', include('ctf.urls')),
     path('admin/', admin.site.urls),
+    path('o/', include('oauth2_provider.urls', namespace='oauth2_provider')),
     # path('account/', include('account.urls')),
     path('accounts/', include('django.contrib.auth.urls')),
     path('login/', auth_views.login, name='login'),
     path('logout/', auth_views.LogoutView.as_view(next_page='ctf:index'), name='logout'),
-    path('notebook/', ProxyView.as_view(upstream=JUPYTERHUB), name='jupyterhub'),
 ]

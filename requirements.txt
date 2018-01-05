@@ -2,6 +2,9 @@ django
 psycopg2
 django-bootstrap4
 django-revproxy
-gunicorn
+django-oauth-toolkit
+django-cors-middleware
+uwsgi
 whitenoise
 plotly
+urllib3<1.23,>=1.21.1

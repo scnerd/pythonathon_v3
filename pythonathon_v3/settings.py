@@ -40,10 +40,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    # 'account',
-    # 'django.contrib.sites',
     'bootstrap4',
     'revproxy',
+    'oauth2_provider',
+    'corsheaders',
 ]
 
 # SITE_ID = 1
@@ -57,9 +57,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
-    # 'account.middleware.LocaleMiddleware',
-    # 'account.middleware.TimezoneMiddleware',
-    # 'account.middleware.ExpiredPasswordMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 ]
 
 ROOT_URLCONF = 'pythonathon_v3.urls'
@@ -77,6 +75,7 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
                 'django.template.context_processors.request',
                 # 'account.context_processors.account',
+                'ctf.context_processors.hubpath_processor',
             ],
         },
     },
