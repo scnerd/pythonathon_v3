@@ -1,4 +1,4 @@
-django
+django>=2
 psycopg2
 django-bootstrap4
 django-revproxy
