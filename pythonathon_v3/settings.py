@@ -25,7 +25,7 @@ SECRET_KEY = '3ds#)t0=6y97$qihq96u6=8^bmb*tmyc**fn92kds_#rf0-jg&'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = bool(int(os.environ.get('DEBUGMODE', int(True))))
 
-ALLOWED_HOSTS = ['localhost']
+ALLOWED_HOSTS = ['localhost', 'pythonathon']
 if 'VIRTUAL_HOST' in os.environ:
     ALLOWED_HOSTS += [h.strip() for h in os.environ['VIRTUAL_HOST'].split(',')]
 
@@ -46,7 +46,10 @@ INSTALLED_APPS = [
     'corsheaders',
 ]
 
-# SITE_ID = 1
+AUTHENTICATION_BACKENDS = [
+    'oauth2_provider.backends.OAuth2Backend',
+    'django.contrib.auth.backends.ModelBackend',
+]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

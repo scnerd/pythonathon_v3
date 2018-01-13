@@ -17,10 +17,25 @@ Including another URLconf
 from django.urls import include, path
 from django.contrib import admin
 from django.contrib.auth import views as auth_views
+from oauth2_provider.decorators import protected_resource
+from django.http import HttpResponse
+import json
+
+
+@protected_resource()
+def get_user(request):
+    user = request.user
+    return HttpResponse(
+        json.dumps({
+            'username': user.username,
+            'email': user.email}),
+        content_type='application/json')
+
 
 urlpatterns = [
     path('', include('ctf.urls')),
     path('admin/', admin.site.urls),
+    path('o/whoami/', get_user),
     path('o/', include('oauth2_provider.urls', namespace='oauth2_provider')),
     # path('account/', include('account.urls')),
     path('accounts/', include('django.contrib.auth.urls')),
