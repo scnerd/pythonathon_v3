@@ -44,7 +44,12 @@ INSTALLED_APPS = [
     'revproxy',
     'oauth2_provider',
     'corsheaders',
+    'graphene_django',
 ]
+
+GRAPHENE = {
+    'SCHEMA': 'pythonathon_v3.schema.schema'  # Where your Graphene schema lives
+}
 
 AUTHENTICATION_BACKENDS = [
     'oauth2_provider.backends.OAuth2Backend',

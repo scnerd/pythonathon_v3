@@ -19,6 +19,7 @@ from django.contrib import admin
 from django.contrib.auth import views as auth_views
 from oauth2_provider.decorators import protected_resource
 from django.http import HttpResponse
+from graphene_django.views import GraphQLView
 import json
 
 
@@ -37,8 +38,8 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('o/whoami/', get_user),
     path('o/', include('oauth2_provider.urls', namespace='oauth2_provider')),
-    # path('account/', include('account.urls')),
     path('accounts/', include('django.contrib.auth.urls')),
     path('login/', auth_views.login, name='login'),
     path('logout/', auth_views.LogoutView.as_view(next_page='ctf:index'), name='logout'),
+    path('graphql', GraphQLView.as_view(graphiql=True)),
 ]

@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth import get_user_model
-import datetime
+from django.utils.timezone import now
 
 # Create your models here.
 class Question(models.Model):
@@ -37,11 +37,18 @@ class Question(models.Model):
         live = bool(self.category is None or
                     self.category.competition is None or
                     self.category.competition.is_live)
-        return allowed and live
+        enrolled = bool(self.category is None or
+                        self.category.competition is None or
+                        user in self.category.competition.competitors.all())
+        return allowed and live and enrolled
 
     def solved_by(self, user):
         res = self.solutions.filter(user=user, success=True)[:1]
         return res[0] if res else None
+
+    def mark_hint_used(self, user):
+        if not self.solved_by(user) and user not in self.has_seen_hint.all():
+            self.has_seen_hint.add(user)
 
     def __str__(self):
         return "{}{}: '{}'".format(self.category.name,
@@ -53,6 +60,9 @@ class File(models.Model):
     name = models.TextField()
     content = models.FileField()
 
+    def is_viewable(self, user):
+        return any(q.is_viewable(user) for q in self.questions)
+
     def __str__(self):
         return "File {}: '{}'".format(self.id, self.name)
 
@@ -61,12 +71,14 @@ class Category(models.Model):
     name = models.TextField()
     sort_order = models.IntegerField(default=-1)
 
-    requires = models.ForeignKey('Question', on_delete=models.SET_NULL, related_name='categories_required_by', blank=True, null=True)
     competition = models.ForeignKey('Competition', on_delete=models.SET_NULL, related_name='categories', blank=True, null=True)
 
     @property
     def order(self):
         return self.sort_order if self.sort_order != -1 else self.id - 2**32
+
+    def is_viewable(self, user):
+        return any(q.is_viewable(user) for q in self.questions.all())
 
     def __str__(self):
         return "Category {}: '{}'".format(self.id, self.name)
@@ -97,7 +109,7 @@ class Competition(models.Model):
 
     @property
     def is_live(self):
-        return self.start <= datetime.datetime.now() <= self.end
+        return self.start <= now() <= self.end
 
     def __str__(self):
         return "Competition {} ({}): {}".format(self.id, 'live' if self.is_live else 'hidden', self.name)

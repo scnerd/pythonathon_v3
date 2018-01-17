@@ -1,6 +1,6 @@
 # Create your views here.
 from django.shortcuts import render, redirect, get_object_or_404
-from django.http import HttpResponseForbidden
+from django.http import HttpResponseForbidden, HttpResponse
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
@@ -82,6 +82,20 @@ def category_view(request, category_id):
     }
 
     return render(request, 'ctf/category.html', context)
+
+
+@login_required()
+def file_download(request, file_id):
+    f = get_object_or_404(File, id=file_id)
+    usr = request.user
+    if not f.is_viewable(usr):
+        return HttpResponseForbidden()
+
+    filename = f.content.name.split('/')[-1]
+    response = HttpResponse(f.name, content_type='text/plain')
+    response['Content-Disposition'] = 'attachment; filename="%s"' % filename
+
+    return response
 
 
 @login_required()
