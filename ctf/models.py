@@ -15,6 +15,9 @@ class Question(models.Model):
 
     requires = models.ForeignKey('Question', on_delete=models.SET_NULL, related_name='questions_required_by', blank=True, null=True)
     category = models.ForeignKey('Category', on_delete=models.SET_NULL, related_name='questions', null=True)
+    files = models.ManyToManyField('File', related_name='questions')
+    solvers = models.ManyToManyField(get_user_model(), related_name='questions_attempted', through='Solution')
+    has_seen_hint = models.ManyToManyField(get_user_model(), related_name='hints_used')
 
     @property
     def order(self):
@@ -49,7 +52,6 @@ class Question(models.Model):
 class File(models.Model):
     name = models.TextField()
     content = models.FileField()
-    question = models.ForeignKey('Question', on_delete=models.CASCADE, related_name='files')
 
     def __str__(self):
         return "File {}: '{}'".format(self.id, self.name)
@@ -68,11 +70,6 @@ class Category(models.Model):
 
     def __str__(self):
         return "Category {}: '{}'".format(self.id, self.name)
-
-
-class HasSeenHint(models.Model):
-    user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, related_name='used_hints')
-    question = models.ForeignKey('Question', on_delete=models.CASCADE, related_name='hinted_users')
 
 
 class Solution(models.Model):
@@ -96,6 +93,11 @@ class Competition(models.Model):
     start = models.DateTimeField()
     end = models.DateTimeField()
 
+    competitors = models.ManyToManyField(get_user_model(), related_name='competitions')
+
     @property
     def is_live(self):
         return self.start <= datetime.datetime.now() <= self.end
+
+    def __str__(self):
+        return "Competition {} ({}): {}".format(self.id, 'live' if self.is_live else 'hidden', self.name)
