@@ -7,6 +7,7 @@ urlpatterns = [
     path('', views.index, name='index'),
     path('questions/<int:question_id>', views.question_view, name='question'),
     path('category/<int:category_id>', views.category_view, name='category'),
+    path('dl/<int:file_id>', views.file_download, name='download'),
     path('problems', views.problem_overview, name='problems'),
     path('profiles', views.profile_overview, name='profiles'),
     path('profile', views.user_profile, name='my_profile'),
