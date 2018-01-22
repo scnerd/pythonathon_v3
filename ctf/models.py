@@ -15,9 +15,9 @@ class Question(models.Model):
 
     requires = models.ForeignKey('Question', on_delete=models.SET_NULL, related_name='questions_required_by', blank=True, null=True)
     category = models.ForeignKey('Category', on_delete=models.SET_NULL, related_name='questions', null=True)
-    files = models.ManyToManyField('File', related_name='questions')
-    solvers = models.ManyToManyField(get_user_model(), related_name='questions_attempted', through='Solution')
-    has_seen_hint = models.ManyToManyField(get_user_model(), related_name='hints_used')
+    files = models.ManyToManyField('File', related_name='questions', blank=True)
+    solvers = models.ManyToManyField(get_user_model(), related_name='questions_attempted', through='Solution', blank=True)
+    has_seen_hint = models.ManyToManyField(get_user_model(), related_name='hints_used', blank=True)
 
     @property
     def order(self):
@@ -105,7 +105,7 @@ class Competition(models.Model):
     start = models.DateTimeField()
     end = models.DateTimeField()
 
-    competitors = models.ManyToManyField(get_user_model(), related_name='competitions')
+    competitors = models.ManyToManyField(get_user_model(), related_name='competitions', blank=True)
 
     @property
     def is_live(self):
