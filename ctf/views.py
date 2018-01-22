@@ -120,10 +120,12 @@ def profile_overview(request):
     context = {}
     users = get_user_model().objects.all()
     users = list(sorted(users, key=lambda u: sum(sol.net_score for sol in u.solutions.all()), reverse=True))
-    context['users'] = [(u,
-                         len({sol.question for sol in u.solutions.all()}),
-                         sum(sol.net_score for sol in u.solutions.all()))
-                        for u in users]
+    users = [(u,
+              len({sol.question for sol in u.solutions.all()}),
+              sum(sol.net_score for sol in u.solutions.all()))
+             for u in users]
+    users = list(sorted(users, key=lambda tup: tup[-1], reverse=True))
+    context['users'] = users
     return render(request, 'ctf/profiles.html', context)
 
 

@@ -51,5 +51,6 @@ urlpatterns = [
     path('accounts/', include('django.contrib.auth.urls')),
     path('login/', auth_views.login, name='login'),
     path('logout/', auth_views.LogoutView.as_view(extra_context=logout_ctxt), name='logout'),
+    path('change_password/', auth_views.PasswordChangeView.as_view(success_url='ctf:my_profile'), name='change_password'),
     path('graphql', GraphQLView.as_view(graphiql=True)),
 ]

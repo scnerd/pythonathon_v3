@@ -4,11 +4,15 @@
 
 {% block content %}
 <div class="container">
-This is {{ user.username }}'s profile!
+    <p>
+        This is {{ user.username }}'s profile!
 
-{% if is_self %}
-Oh hey! It's you! Welcome to your own profile!
-{% endif %}
+        {% if is_self %}
+        Oh hey! It's you! Welcome to your own profile!
+        {% endif %}
+    </p>
+
+    {% if is_self %}<p><a href="{% url 'password_change' %}">Change Password</a></p>{% endif %}
 
     <table class="table table-striped">
         <thead>

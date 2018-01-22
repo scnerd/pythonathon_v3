@@ -7,7 +7,7 @@
 {% block content %}
 <h1><a href="{% url 'ctf:category' question.category.id %}">{{ question.category.name }}</a> / {{ question.name }}</h1>
 
-{{ question.full_text }}
+{{ question.full_text | linebreaks }}
 
 {% if solution %}
 <div class="alert alert-success">You've solved this problem for {{ solution.net_score }} points!</div>
