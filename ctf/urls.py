@@ -6,6 +6,7 @@ app_name = 'ctf'
 urlpatterns = [
     path('', views.index, name='index'),
     path('questions/<int:question_id>', views.question_view, name='question'),
+    path('questions/<int:question_id>/hint', views.hint_view, name='hint'),
     path('category/<int:category_id>', views.category_view, name='category'),
     path('dl/<int:file_id>', views.file_download, name='download'),
     path('problems', views.problem_overview, name='problems'),

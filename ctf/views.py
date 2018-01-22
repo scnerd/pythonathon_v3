@@ -1,5 +1,5 @@
 # Create your views here.
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import render, redirect, reverse, get_object_or_404
 from django.http import HttpResponseForbidden, HttpResponse
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
@@ -49,13 +49,30 @@ def question_view(request, question_id):
         form = SubmissionForm()
 
     attempts = user.solutions.filter(question=q).order_by('-timestamp')
+    hint = None
+    if q.has_seen_hint.filter(pk=user.pk).exists():
+        hint = q.hint
     context = {
         'question': q,
         'solution': sol,
         'attempts': attempts,
-        'form': form
+        'form': form,
+        'hint_url': reverse('ctf:hint', kwargs=dict(question_id=q.id)) if q.hint else None,
+        'hint': hint,
     }
     return render(request, 'ctf/question.html', context)
+
+
+@login_required()
+def hint_view(request, question_id):
+    q = get_object_or_404(Question, id=question_id)
+    user = request.user
+    if not q.is_viewable(user):
+        return HttpResponseForbidden()
+
+    q.mark_hint_used(user)
+
+    return redirect('ctf:question', question_id=question_id)
 
 
 @login_required()

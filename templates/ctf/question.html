@@ -13,13 +13,19 @@
 <div class="alert alert-success">You've solved this problem for {{ solution.net_score }} points!</div>
 {% else %}
 
+{% if hint %}
+<div class="alert alert-secondary">HINT: {{ hint }}</div>
+{% endif %}
+
 {% bootstrap_form_errors form layout='inline' %}
 <form action="{% url 'ctf:question' question.id %}" method="post">
 {% csrf_token %}
 {% bootstrap_form form %}
 {% buttons %}
 {% bootstrap_button 'Submit' button_type="submit" button_class="btn-primary" %}
-{% bootstrap_button 'Hint' button_type="button" href="{% url 'ctf:hint' question.id %}" %}
+{% if not hint and hint_url %}
+    {% bootstrap_button 'Hint' button_type="button" href=hint_url %}
+{% endif %}
 {% endbuttons %}
 </form>
 
@@ -32,6 +38,7 @@
     {% endfor %}
     </tbody>
 </table>
+{% endif %}
 
 {% endif %}
 

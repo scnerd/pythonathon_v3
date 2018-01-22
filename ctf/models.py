@@ -96,8 +96,8 @@ class Solution(models.Model):
     def net_score(self):
         if not self.success:
             return 0
-        hints = self.user.used_hints.filter(question=self.question)
-        return self.question.points - (self.question.hint_cost if len(hints) else 0)
+        hints = self.question.has_seen_hint.filter(pk=self.user.pk).exists()
+        return self.question.points - (self.question.hint_cost if hints else 0)
 
 
 class Competition(models.Model):
