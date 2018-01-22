@@ -5,10 +5,10 @@
 {% block content %}
 <div class="container">
     <p>
-        This is {{ user.username }}'s profile!
-
         {% if is_self %}
         Oh hey! It's you! Welcome to your own profile!
+        {% else %}
+        This is {{ user.username }}'s profile!
         {% endif %}
     </p>
 
