@@ -1,0 +1,10 @@
+{% extends "../pythonathon_v3/base.html" %}
+
+{% block content %}
+
+<h3>You have been successfully logged out.</h3>
+
+<iframe src="{{ jupyterhub_logout_url }}" height="0" width="0" frameborder="0"></iframe>
+<!--<iframe src="{{ jupyterhub_logout_url }}"></iframe>-->
+
+{% endblock %}
