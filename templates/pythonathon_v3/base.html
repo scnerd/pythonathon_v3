@@ -21,7 +21,7 @@
                 <ul class="navbar-nav">
                     <li class="nav-item"><a href="{% url 'ctf:index' %}" class="nav-link">Home</a></li>
                     <li class="nav-item"><a href="{% url 'ctf:problems' %}" class="nav-link">Problems</a></li>
-                    <li class="nav-item"><a href="{% url 'ctf:profiles' %}" class="nav-link">Profiles</a></li>
+                    <li class="nav-item"><a href="{% url 'ctf:profiles' %}" class="nav-link">Leaderboard</a></li>
                     {% if request.user.is_anonymous %}
                     <li class="nav-item"><a href="{% url 'login' %}" class="nav-link">Log in</a></li>
                     <li class="nav-item"><a href="{% url 'ctf:signup' %}" class="nav-link">Sign up</a></li>
@@ -30,7 +30,7 @@
                     {% if request.user.is_superuser %}
                     <li class="nav-item"><a href="{% url 'admin:index' %}" class="nav-link">Admin</a></li>
                     {% endif %}
-                    <li class="nav-item"><a href="{% url 'ctf:profile' request.user.id %}" class="nav-link">Hello, {{ request.user.username }}</a></li>
+                    <li class="nav-item"><a href="{% url 'ctf:profile' request.user.id %}" class="nav-link">Profile</a></li>
                     <li class="nav-item"><a href="{% url 'logout' %}" class="nav-link">Log out</a></li>
                     {% endif %}
                 </ul>
