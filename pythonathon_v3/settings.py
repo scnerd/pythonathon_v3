@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'oauth2_provider',
     'corsheaders',
     'graphene_django',
+    'captcha',
 ]
 
 GRAPHENE = {
@@ -89,6 +90,8 @@ TEMPLATES = [
         },
     },
 ]
+
+
 
 WSGI_APPLICATION = 'pythonathon_v3.wsgi.application'
 
@@ -159,3 +162,6 @@ STATIC_URL = '/static/'
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 # STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)
 
+RECAPTCHA_PUBLIC_KEY = open(os.environ['RECAPTCHA_PUBLICKEY_PATH']).read()
+RECAPTCHA_PRIVATE_KEY = open(os.environ['RECAPTCHA_PRIVATEKEY_PATH']).read()
+NOCAPTCHA = True

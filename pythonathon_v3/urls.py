@@ -24,6 +24,7 @@ from django.http import HttpResponse
 from django.urls import include, path
 from graphene_django.views import GraphQLView
 from oauth2_provider.decorators import protected_resource
+from ctf.forms import LoginWithCaptcha
 
 log = logging.getLogger()
 
@@ -49,7 +50,7 @@ urlpatterns = [
     path('o/whoami/', get_user),
     path('o/', include('oauth2_provider.urls', namespace='oauth2_provider')),
     path('accounts/', include('django.contrib.auth.urls')),
-    path('login/', auth_views.login, name='login'),
+    path('login/', auth_views.LoginView.as_view(authentication_form=LoginWithCaptcha), name='login'),
     path('logout/', auth_views.LogoutView.as_view(extra_context=logout_ctxt), name='logout'),
     path('change_password/', auth_views.PasswordChangeView.as_view(success_url='ctf:my_profile'), name='change_password'),
     path('graphql', GraphQLView.as_view(graphiql=True)),

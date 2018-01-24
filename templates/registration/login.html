@@ -4,6 +4,10 @@
 
 {% load bootstrap4 %}
 
+{% block prefix %}
+<script src='https://www.google.com/recaptcha/api.js'></script>
+{% endblock %}
+
 {% block content %}
 
 {% bootstrap_form_errors form layout='inline' %}
@@ -11,7 +15,14 @@
 {% csrf_token %}
 {% bootstrap_form form %}
 {% buttons %}
-{% bootstrap_button 'Submit' button_type="submit" button_class="btn-primary" %}
+{# {% bootstrap_button 'Submit' button_type="submit" button_class="btn-primary" %} #}
+<button
+class="g-recaptcha btn-primary"
+type="submit"
+data-sitekey="6LdrOEIUAAAAABfm0F2fWdDKdue_O7fNwEQ2uGd5"
+data-callback="YourOnSubmitFn">
+Submit
+</button>
 {% endbuttons %}
 </form>
 
