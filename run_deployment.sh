@@ -1,6 +1,17 @@
 #!/bin/sh
 set -ex
 
+function cleanup {
+    name=/ctf_data/db
+    i=0
+    if [[ -e "${name}.json" ]] ; then
+        mv "${name}.json" "${name}_backup.json"
+    fi
+    name="${name}.json"
+    ./manage.py dumpdata ctf > $name
+}
+trap cleanup EXIT
+
 sleep 1
 ./manage.py migrate
 ./manage.py initadmin

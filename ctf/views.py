@@ -5,6 +5,8 @@ from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib import messages
+from django.conf import settings
+from markdown2 import markdown
 from .models import *
 from .forms import *
 
@@ -54,6 +56,7 @@ def question_view(request, question_id):
         hint = q.hint
     context = {
         'question': q,
+        'formatted_question_text': markdown(q.full_text, extras=getattr(settings, 'MARKDOWN_EXTRAS', [])),
         'solution': sol,
         'attempts': attempts,
         'form': form,
