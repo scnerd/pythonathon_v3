@@ -2,7 +2,7 @@
 set -ex
 
 function cleanup {
-    name=/ctf_data/db
+    name="${BACKUP_PATH}/db"
     i=0
     if [[ -e "${name}.json" ]] ; then
         mv "${name}.json" "${name}_backup.json"
