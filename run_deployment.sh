@@ -13,6 +13,7 @@ function cleanup {
 trap cleanup EXIT
 
 sleep 1
+./manage.py dumpdata ctf > "${BACKUP_PATH}/onlaunch.json"
 ./manage.py makemigrations
 ./manage.py migrate
 ./manage.py initadmin
