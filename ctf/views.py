@@ -16,6 +16,7 @@ def viewable_questions(user):
 
 
 def index(request):
+    # TODO: Don't report points for superusers
     latest_solutions = Solution.objects.filter(success=True).order_by('-timestamp')[:5]
     context = {
         'latest_solution_list': latest_solutions,
@@ -106,6 +107,7 @@ def category_view(request, category_id):
 
 @login_required()
 def file_download(request, file_id):
+    # TODO: Check file downloads and links work
     f = get_object_or_404(File, id=file_id)
     usr = request.user
     if not f.is_viewable(usr):

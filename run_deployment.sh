@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 set -ex
 
 function cleanup {
@@ -13,8 +13,10 @@ function cleanup {
 trap cleanup EXIT
 
 sleep 1
+./manage.py makemigrations
 ./manage.py migrate
 ./manage.py initadmin
 ./manage.py initjupyterhub
+./manage.py collectstatic
 uwsgi --http :8000 --socket :3031 --module pythonathon_v3.wsgi
 # gunicorn pythonathon_v3.wsgi --bind 0.0.0.0:8000

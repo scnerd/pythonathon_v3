@@ -5,6 +5,7 @@ django-revproxy
 django-oauth-toolkit
 django-cors-middleware
 markdown2
+pygments
 uwsgi
 whitenoise
 plotly

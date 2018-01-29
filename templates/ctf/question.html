@@ -3,6 +3,11 @@
 {% block title %}Question: {{ question.name }}{% endblock %}
 
 {% load bootstrap4 %}
+{% load staticfiles %}
+
+{% block prefetch %}
+<link href="{% static 'css/pygment.css' %}" rel="stylesheet">
+{% endblock %}
 
 {% block content %}
 <h1><a href="{% url 'ctf:category' question.category.id %}">{{ question.category.name }}</a> / {{ question.name }}</h1>
@@ -18,6 +23,10 @@
     {{ hint | linebreaks }}
 </div>
 {% endif %}
+
+{% for f in files %}
+<p><a href="{% url download f.id %}">{{ f.name }}</a></p>
+{% endfor %}
 
 {% bootstrap_form_errors form layout='inline' %}
 <form action="{% url 'ctf:question' question.id %}" method="post">
