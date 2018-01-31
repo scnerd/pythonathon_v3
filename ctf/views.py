@@ -140,8 +140,7 @@ def file_download(request, file_id):
 
 
 def list_downloads(request):
-    usr = request.user
-    return JsonResponse({'file_ids': [f.id for f in File.objects.all() if f.is_viewable(usr)]})
+    return JsonResponse({'file_ids': [f.id for f in File.objects.all() if f.questions.count()]})
 
 
 @login_required()
