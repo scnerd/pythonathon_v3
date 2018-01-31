@@ -24,9 +24,14 @@
 </div>
 {% endif %}
 
-{% for f in files %}
-<p><a href="{% url download f.id %}">{{ f.name }}</a></p>
-{% endfor %}
+{% if files %}
+<div class="alert alert-info">
+    <strong>Files</strong><br>
+    {% for f in files %}
+    <a href="{% url 'ctf:download' f.id %}">{{ f.name }}</a><br>
+    {% endfor %}
+</div>
+{% endif %}
 
 {% bootstrap_form_errors form layout='inline' %}
 <form action="{% url 'ctf:question' question.id %}" method="post">

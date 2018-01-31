@@ -1,14 +1,16 @@
-# Create your views here.
+import os
+
 from django.shortcuts import render, redirect, reverse, get_object_or_404
-from django.http import HttpResponseForbidden, HttpResponse
-from django.contrib.auth import login, logout, authenticate
+from django.http import HttpResponseForbidden, HttpResponse, HttpResponseNotFound, JsonResponse
+from django.contrib.auth import login, authenticate
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+from django.contrib.auth.forms import UserCreationForm
 from django.contrib import messages
-from django.conf import settings
 from markdown2 import markdown
 from .models import *
 from .forms import *
+from logging import getLogger
+log = getLogger()
 
 
 def viewable_questions(user):
@@ -63,6 +65,7 @@ def question_view(request, question_id):
         'form': form,
         'hint_url': reverse('ctf:hint', kwargs=dict(question_id=q.id)) if q.hint else None,
         'hint': hint,
+        'files': q.files.all(),
     }
     return render(request, 'ctf/question.html', context)
 
@@ -105,19 +108,40 @@ def category_view(request, category_id):
     return render(request, 'ctf/category.html', context)
 
 
-@login_required()
 def file_download(request, file_id):
-    # TODO: Check file downloads and links work
-    f = get_object_or_404(File, id=file_id)
+    print("Attempting to download file '{}'".format(file_id))
+    if isinstance(file_id, int):
+        f = File.objects.get(id=file_id)
+        if not f:
+            return HttpResponseNotFound("Attempted to get invalid file id {}".format(file_id))
+    elif isinstance(file_id, str):
+        try:
+            f = next(f for f in File.objects.all() if f.content.name == file_id)
+        except StopIteration:
+            return HttpResponseNotFound("Attempted to get invalid file path {}".format(file_id))
+    else:
+        return HttpResponseNotFound("Unknown type for file id: {}".format(type(file_id)))
+
+    # # TODO: Figure out if this is necessary... if so, how to authenticate notebooks for auto-downloading?
+    # usr = request.user
+    # if not f.is_viewable(usr):
+    #     return HttpResponseForbidden()
+
+    path = os.path.join(settings.MEDIA_ROOT, f.content.name)
+    extension = path.partition('.')[-1]
+    if os.path.exists(path):
+        with open(path, 'rb') as fp:
+            response = HttpResponse(fp.read(), content_type='text/plain')
+            response['Content-Disposition'] = 'attachment; filename="{}.{}"'.format(f.name, extension)
+
+            return response
+
+    return HttpResponseNotFound()
+
+
+def list_downloads(request):
     usr = request.user
-    if not f.is_viewable(usr):
-        return HttpResponseForbidden()
-
-    filename = f.content.name.split('/')[-1]
-    response = HttpResponse(f.name, content_type='text/plain')
-    response['Content-Disposition'] = 'attachment; filename="%s"' % filename
-
-    return response
+    return JsonResponse({'file_ids': [f.id for f in File.objects.all() if f.is_viewable(usr)]})
 
 
 @login_required()
