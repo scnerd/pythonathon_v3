@@ -13,7 +13,13 @@ function cleanup {
 trap cleanup EXIT
 
 sleep 1
-./manage.py dumpdata ctf > "${BACKUP_PATH}/onlaunch.json"
+if [[ -e ${RESTORE_PATH} ]]; then
+./manage.py loaddata ${RESTORE_PATH};
+mv ${RESTORE_PATH} "${RESTORE_PATH}.done"
+else
+./manage.py dumpdata ctf > "${BACKUP_PATH}/onlaunch.json";
+fi
+
 ./manage.py makemigrations
 ./manage.py migrate
 ./manage.py initadmin
