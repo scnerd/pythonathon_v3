@@ -7,21 +7,31 @@ function cleanup {
     if [[ -e "${name}.json" ]] ; then
         mv "${name}.json" "${name}_backup.json"
     fi
+    if [[ -e "${name}_questions.json" ]] ; then
+        mv "${name}_questions.json" "${name}_questions_backup.json"
+    fi
+    qname="${name}_questions.json"
     name="${name}.json"
-    ./manage.py dumpdata ctf > $name
+    ./manage.py dumpdata > $name
+    ./manage.py dumpdata ctf > $qname
 }
 trap cleanup EXIT
 
 sleep 1
-if [[ -e ${RESTORE_PATH} ]]; then
-./manage.py loaddata ${RESTORE_PATH};
-mv ${RESTORE_PATH} "${RESTORE_PATH}.done"
-else
-./manage.py dumpdata ctf > "${BACKUP_PATH}/onlaunch.json";
+
+if [[ ! -e ${RESTORE_PATH} ]]; then
+./manage.py dumpdata > "${BACKUP_PATH}/onlaunch.json";
+./manage.py dumpdata > "${BACKUP_PATH}/onlaunch_questions.json";
 fi
 
 ./manage.py makemigrations
 ./manage.py migrate
+
+if [[ -e ${RESTORE_PATH} ]]; then
+./manage.py loaddata ${RESTORE_PATH};
+mv ${RESTORE_PATH} "${RESTORE_PATH}.done"
+fi
+
 ./manage.py initadmin
 ./manage.py initjupyterhub
 ./manage.py collectstatic
