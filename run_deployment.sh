@@ -12,17 +12,12 @@ function cleanup {
     fi
     qname="${name}_questions.json"
     name="${name}.json"
-    ./manage.py dumpdata > $name
     ./manage.py dumpdata ctf > $qname
+    ./manage.py dumpdata > $name
 }
 trap cleanup EXIT
 
 sleep 1
-
-if [[ ! -e ${RESTORE_PATH} ]]; then
-./manage.py dumpdata > "${BACKUP_PATH}/onlaunch.json";
-./manage.py dumpdata > "${BACKUP_PATH}/onlaunch_questions.json";
-fi
 
 ./manage.py makemigrations
 ./manage.py migrate
@@ -30,6 +25,11 @@ fi
 if [[ -e ${RESTORE_PATH} ]]; then
 ./manage.py loaddata ${RESTORE_PATH};
 mv ${RESTORE_PATH} "${RESTORE_PATH}.done"
+else
+set +e
+./manage.py dumpdata ctf > "${BACKUP_PATH}/onlaunch_questions.json";
+./manage.py dumpdata > "${BACKUP_PATH}/onlaunch.json";
+set -e
 fi
 
 ./manage.py initadmin
