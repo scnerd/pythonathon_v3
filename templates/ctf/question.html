@@ -10,7 +10,7 @@
 {% endblock %}
 
 {% block content %}
-<h1><a href="{% url 'ctf:category' question.category.id %}">{{ question.category.name }}</a> / {{ question.name }}</h1>
+<h1><a href="{% url 'ctf:category' question.category.id %}"><i class="fas fa-level-up-alt fa-flip-horizontal"></i> {{question.category.name}}</a> / {{ question.name }}</h1>
 
 {{ formatted_question_text | safe }}
 

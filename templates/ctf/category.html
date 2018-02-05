@@ -3,9 +3,7 @@
 {% block title %}Category: {{ category.name }}{% endblock %}
 
 {% block content %}
-<h1>{{ category.name }}</h1>
-
-<a href="{% url 'ctf:problems' %}" role="button" class="btn btn-secondary"><span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>Back</a>
+<h1><a href="{% url 'ctf:problems' %}"><i class="fas fa-level-up-alt fa-flip-horizontal"></i> Problems</a> / {{ category.name }}</h1>
 
 <table class="table table-striped">
     <thead>
