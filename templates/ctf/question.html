@@ -10,12 +10,36 @@
 {% endblock %}
 
 {% block content %}
-<h1><a href="{% url 'ctf:category' question.category.id %}"><i class="fas fa-level-up-alt fa-flip-horizontal"></i> {{question.category.name}}</a> / {{ question.name }}</h1>
+<h1><a href="{% url 'ctf:category' question.category.id %}"><i class="fas fa-level-up-alt fa-flip-horizontal"></i>
+    {{question.category.name}}</a> / {{ question.name }}</h1>
 
 {{ formatted_question_text | safe }}
 
 {% if solution %}
-<div class="alert alert-success">You've solved this problem for {{ solution.net_score }} points!</div>
+<div class="alert alert-success">
+    <p>You've solved this problem for {{ solution.net_score }} points!</p>
+
+    {% if unlocked_questions %}
+    <p>You've unlocked the following problems:
+        {% for q in unlocked_questions %}
+        {% if q.category == question.category %}
+    <p><a href="{% url 'ctf:question' q.id %}" role="button" class="btn btn-success">
+        {{ q.category.name }}: {{ q.name }} <i class="fas fa-arrow-right"></i>
+    </a>
+    <p>
+        {% endif %}
+        {% endfor %}
+        {% for q in unlocked_questions %}
+        {% if q.category != question.category %}
+    <p><a href="{% url 'ctf:question' q.id %}" role="button" class="btn btn-success">
+        {{ q.category.name }}: {{ q.name }} <i class="fas fa-arrow-right"></i>
+    </a>
+    <p>
+        {% endif %}
+        {% endfor %}
+    </p>
+    {% endif %}
+</div>
 {% else %}
 
 {% if hint %}
@@ -35,14 +59,14 @@
 
 {% bootstrap_form_errors form layout='inline' %}
 <form action="{% url 'ctf:question' question.id %}" method="post">
-{% csrf_token %}
-{% bootstrap_form form %}
-{% buttons %}
-{% bootstrap_button 'Submit' button_type="submit" button_class="btn-primary" %}
-{% if not hint and hint_url %}
+    {% csrf_token %}
+    {% bootstrap_form form %}
+    {% buttons %}
+    {% bootstrap_button 'Submit' button_type="submit" button_class="btn-primary" %}
+    {% if not hint and hint_url %}
     {% bootstrap_button 'Hint' button_type="button" href=hint_url %}
-{% endif %}
-{% endbuttons %}
+    {% endif %}
+    {% endbuttons %}
 </form>
 
 {% if attempts %}
@@ -50,7 +74,9 @@
 <table class="table table-striped">
     <tbody>
     {% for att in attempts %}
-    <tr><td>{{ att.submission }}</td></tr>
+    <tr>
+        <td>{{ att.submission }}</td>
+    </tr>
     {% endfor %}
     </tbody>
 </table>

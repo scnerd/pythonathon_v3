@@ -57,6 +57,9 @@ def question_view(request, question_id):
     hint = None
     if q.has_seen_hint.filter(pk=user.pk).exists():
         hint = q.hint
+
+    unlocked = Question.objects.filter(requires=q)
+
     context = {
         'question': q,
         'formatted_question_text': markdown(q.full_text, extras=getattr(settings, 'MARKDOWN_EXTRAS', [])),
@@ -66,6 +69,7 @@ def question_view(request, question_id):
         'hint_url': reverse('ctf:hint', kwargs=dict(question_id=q.id)) if q.hint else None,
         'hint': hint,
         'files': q.files.all(),
+        'unlocked_questions': unlocked,
     }
     return render(request, 'ctf/question.html', context)
 

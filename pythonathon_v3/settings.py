@@ -171,6 +171,6 @@ EMAIL_USE_TLS = True
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 user_path = os.environ.get('GMAIL_USER_PATH', None)
-if user_path:
+if user_path and os.path.exists(user_path):
     EMAIL_HOST_USER = open(os.environ['GMAIL_USER_PATH']).read()
     EMAIL_HOST_PASSWORD = open(os.environ['GMAIL_PWD_PATH']).read()
