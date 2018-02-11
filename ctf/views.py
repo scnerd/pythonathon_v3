@@ -19,7 +19,7 @@ def viewable_questions(user):
 
 def index(request):
     # TODO: Don't report points for superusers
-    latest_solutions = Solution.objects.filter(success=True).order_by('-timestamp')[:5]
+    latest_solutions = Solution.objects.filter(success=True, user__is_superuser=False).order_by('-timestamp')[:5]
     context = {
         'latest_solution_list': latest_solutions,
     }
@@ -34,8 +34,8 @@ def question_view(request, question_id):
     if not q.is_viewable(user):
         return HttpResponseForbidden()
 
-    sol = None
-    if request.method == 'POST':
+    sol = q.solved_by(user)
+    if request.method == 'POST' and not sol:
         form = SubmissionForm(request.POST)
         if form.is_valid():
             answer = form.cleaned_data['answer']
@@ -59,6 +59,9 @@ def question_view(request, question_id):
         hint = q.hint
 
     unlocked = Question.objects.filter(requires=q)
+    same_cat_unlocked = [next_q for next_q in unlocked if next_q.category == q.category]
+    else_unlocked = set(unlocked) - set(same_cat_unlocked)
+    unlocked = list(sorted(same_cat_unlocked)) + list(sorted(else_unlocked))
 
     context = {
         'question': q,
@@ -94,7 +97,7 @@ def problem_overview(request):
              len(category.questions.all()),
              len([q for q in category.questions.all() if q.solved_by(request.user)])
              )
-            for category in sorted(categories, key=lambda c: c.order)]
+            for category in sorted(categories)]
     context = {'categories': cats}
     return render(request, 'ctf/problems.html', context)
 
@@ -102,7 +105,7 @@ def problem_overview(request):
 @login_required()
 def category_view(request, category_id):
     cat = get_object_or_404(Category, id=category_id)
-    questions = sorted([q for q in cat.questions.all() if q.is_viewable(request.user)], key=lambda q: q.order)
+    questions = sorted([q for q in cat.questions.all() if q.is_viewable(request.user)])
     question_solution_pairs = [(q, q.solved_by(request.user)) for q in questions]
     context = {
         'category': cat,
@@ -158,6 +161,9 @@ def profile_overview(request):
              for u in users]
     users = list(sorted(users, key=lambda tup: tup[-1], reverse=True))
     context['users'] = users
+
+    
+
     return render(request, 'ctf/profiles.html', context)
 
 

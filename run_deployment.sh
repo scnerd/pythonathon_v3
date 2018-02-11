@@ -19,7 +19,6 @@ trap cleanup EXIT
 
 sleep 1
 
-./manage.py makemigrations
 ./manage.py migrate
 
 if [[ -e ${RESTORE_PATH} ]]; then

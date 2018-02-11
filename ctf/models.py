@@ -24,6 +24,15 @@ class Question(models.Model):
     def order(self):
         return self.sort_order if self.sort_order != -1 else self.id - 2**32
 
+    def __lt__(self, other):
+        if isinstance(other, Question):
+            if other.category == self.category:
+                return self.order < other.order
+            else:
+                return self.category < other.category
+        else:
+            raise TypeError()
+
     def check_answer(self, answer):
         target = self.answer
         if not self.case_sensitive:
@@ -78,6 +87,12 @@ class Category(models.Model):
     def order(self):
         return self.sort_order if self.sort_order != -1 else self.id - 2**32
 
+    def __lt__(self, other):
+        if isinstance(other, Question):
+            return self.order < other.order
+        else:
+            raise TypeError()
+
     def is_viewable(self, user):
         return any(q.is_viewable(user) for q in self.questions.all())
 
@@ -92,6 +107,9 @@ class Solution(models.Model):
 
     user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, related_name='solutions')
     question = models.ForeignKey('Question', on_delete=models.CASCADE, related_name='solutions')
+
+    class Meta:
+        unique_together = ('user', 'question')
 
     @property
     def net_score(self):
@@ -114,3 +132,13 @@ class Competition(models.Model):
 
     def __str__(self):
         return "Competition {} ({}): {}".format(self.id, 'live' if self.is_live else 'hidden', self.name)
+
+
+# class Team(models.Model):
+#     name = models.TextField()
+#
+#     competition = models.ForeignKey('Competition', on_delete=models.CASCADE, related_name='teams')
+#
+#
+# class TeamMember(models.Model):
+#     pass
