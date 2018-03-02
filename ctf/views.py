@@ -98,7 +98,10 @@ def problem_overview(request):
              len([q for q in category.questions.all() if q.solved_by(request.user)])
              )
             for category in sorted(categories)]
-    context = {'categories': cats}
+    context = {
+        'categories': cats,
+        'next_question': Question.next_question(request.user, questions)
+    }
     return render(request, 'ctf/problems.html', context)
 
 

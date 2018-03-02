@@ -3,6 +3,12 @@
 {% block title %}Questions{% endblock %}
 
 {% block content %}
+{% if next_question %}
+<p><a href="{% url 'ctf:question' next_question.id %}" role="button" class="btn btn-success">
+        Next Question: {{ next_question.category.name }}: {{ next_question.name }} <i class="fas fa-arrow-right"></i>
+</a></p>
+{% endif %}
+
 <table class="table table-striped">
     <thead>
     <tr>

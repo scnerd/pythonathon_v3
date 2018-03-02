@@ -16,7 +16,7 @@
     {% for q, sol in question_solution_pairs %}
     <tr>
         <td><a href="{% url 'ctf:question' q.id %}">{{ q.name }}</a></td>
-        <td>{% if sol %}{{ sol.net_score }}{% else %}Not yet solved{% endif %}</td>
+        <td>{% if sol %}{{ sol.net_score }}{% endif %}</td>
     </tr>
     {% endfor %}
     </tbody>

@@ -60,6 +60,12 @@ class Question(models.Model):
         if not self.solved_by(user) and user not in self.has_seen_hint.all():
             self.has_seen_hint.add(user)
 
+    @staticmethod
+    def next_question(user, questions=None):
+        if questions is None:
+            questions = Question.objects.all()
+        return next(iter(sorted(q for q in questions if q.is_viewable(user) and not q.solved_by(user))))
+
     def __str__(self):
         return "{}{}: '{}'".format(self.category.name,
                                    '' if self.sort_order == -1 else ' ({})'.format(self.sort_order),
@@ -88,7 +94,7 @@ class Category(models.Model):
         return self.sort_order if self.sort_order != -1 else self.id - 2**32
 
     def __lt__(self, other):
-        if isinstance(other, Question):
+        if isinstance(other, Category):
             return self.order < other.order
         else:
             raise TypeError()
