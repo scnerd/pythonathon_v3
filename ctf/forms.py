@@ -1,6 +1,7 @@
 from django import forms
 from django.contrib.auth import forms as auth_forms
-from captcha.fields import ReCaptchaField
+from snowpenguin.django.recaptcha2.fields import ReCaptchaField
+from snowpenguin.django.recaptcha2.widgets import ReCaptchaWidget
 
 
 class SubmissionForm(forms.Form):
@@ -8,4 +9,8 @@ class SubmissionForm(forms.Form):
 
 
 class LoginWithCaptcha(auth_forms.AuthenticationForm):
-    captcha = ReCaptchaField()
+    captcha = ReCaptchaField(widget=ReCaptchaWidget())
+
+
+class UserCreationFormWithCaptcha(auth_forms.UserCreationForm):
+    captcha = ReCaptchaField(widget=ReCaptchaWidget())

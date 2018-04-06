@@ -4,7 +4,6 @@ from django.shortcuts import render, redirect, reverse, get_object_or_404
 from django.http import HttpResponseForbidden, HttpResponse, HttpResponseNotFound, JsonResponse
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.forms import UserCreationForm
 from django.contrib import messages
 from markdown2 import markdown
 from .models import *
@@ -198,6 +197,6 @@ def signup(request):
             login(request, user)
             return redirect('ctf:index')
     else:
-        form = UserCreationForm()
+        form = UserCreationFormWithCaptcha()
     context = {'form': form}
     return render(request, 'registration/signup.html', context)
