@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth import get_user_model
 from django.utils.timezone import now
+from django.conf import settings
 
 # Create your models here.
 class Question(models.Model):
@@ -22,6 +23,15 @@ class Question(models.Model):
     @property
     def order(self):
         return self.sort_order if self.sort_order != -1 else self.id - 2**32
+
+    def __lt__(self, other):
+        if isinstance(other, Question):
+            if other.category == self.category:
+                return self.order < other.order
+            else:
+                return self.category < other.category
+        else:
+            raise TypeError()
 
     def check_answer(self, answer):
         target = self.answer
@@ -50,6 +60,12 @@ class Question(models.Model):
         if not self.solved_by(user) and user not in self.has_seen_hint.all():
             self.has_seen_hint.add(user)
 
+    @staticmethod
+    def next_question(user, questions=None):
+        if questions is None:
+            questions = Question.objects.all()
+        return next(iter(sorted(q for q in questions if q.is_viewable(user) and not q.solved_by(user))))
+
     def __str__(self):
         return "{}{}: '{}'".format(self.category.name,
                                    '' if self.sort_order == -1 else ' ({})'.format(self.sort_order),
@@ -58,10 +74,10 @@ class Question(models.Model):
 
 class File(models.Model):
     name = models.TextField()
-    content = models.FileField()
+    content = models.FileField(upload_to='question_files')
 
     def is_viewable(self, user):
-        return any(q.is_viewable(user) for q in self.questions)
+        return any(q.is_viewable(user) for q in self.questions.all())
 
     def __str__(self):
         return "File {}: '{}'".format(self.id, self.name)
@@ -77,6 +93,12 @@ class Category(models.Model):
     def order(self):
         return self.sort_order if self.sort_order != -1 else self.id - 2**32
 
+    def __lt__(self, other):
+        if isinstance(other, Category):
+            return self.order < other.order
+        else:
+            raise TypeError()
+
     def is_viewable(self, user):
         return any(q.is_viewable(user) for q in self.questions.all())
 
@@ -91,6 +113,9 @@ class Solution(models.Model):
 
     user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, related_name='solutions')
     question = models.ForeignKey('Question', on_delete=models.CASCADE, related_name='solutions')
+
+    class Meta:
+        unique_together = ('user', 'question')
 
     @property
     def net_score(self):
@@ -113,3 +138,13 @@ class Competition(models.Model):
 
     def __str__(self):
         return "Competition {} ({}): {}".format(self.id, 'live' if self.is_live else 'hidden', self.name)
+
+
+# class Team(models.Model):
+#     name = models.TextField()
+#
+#     competition = models.ForeignKey('Competition', on_delete=models.CASCADE, related_name='teams')
+#
+#
+# class TeamMember(models.Model):
+#     pass

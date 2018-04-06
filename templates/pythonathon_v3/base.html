@@ -3,12 +3,23 @@
 {# Load CSS and JavaScript #}
 {% bootstrap_css %}
 {% bootstrap_javascript jquery=1 %}
-{% block prefix %}{% endblock %}
+{% block prefetch %}{% endblock %}
 
 {# Display django.contrib.messages as Bootstrap alerts #}
 {% bootstrap_messages %}
 
-<head><title>{% block title %}Pythonathon{% endblock %}</title></head>
+<head>
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-26006587-5"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-26006587-5');
+</script>
+<link href="https://use.fontawesome.com/releases/v5.0.6/css/all.css" rel="stylesheet">
+<title>{% block title %}Pythonathon{% endblock %}</title></head>
 
 <div id="wrapper">
     <nav class="navbar navbar-light navbar-expand-lg">

@@ -1,12 +1,16 @@
-# Create your views here.
+import os
+
 from django.shortcuts import render, redirect, reverse, get_object_or_404
-from django.http import HttpResponseForbidden, HttpResponse
-from django.contrib.auth import login, logout, authenticate
+from django.http import HttpResponseForbidden, HttpResponse, HttpResponseNotFound, JsonResponse
+from django.contrib.auth import login, authenticate
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+from django.contrib.auth.forms import UserCreationForm
 from django.contrib import messages
+from markdown2 import markdown
 from .models import *
 from .forms import *
+from logging import getLogger
+log = getLogger()
 
 
 def viewable_questions(user):
@@ -14,7 +18,8 @@ def viewable_questions(user):
 
 
 def index(request):
-    latest_solutions = Solution.objects.filter(success=True).order_by('-timestamp')[:5]
+    # TODO: Don't report points for superusers
+    latest_solutions = Solution.objects.filter(success=True, user__is_superuser=False).order_by('-timestamp')[:5]
     context = {
         'latest_solution_list': latest_solutions,
     }
@@ -29,8 +34,8 @@ def question_view(request, question_id):
     if not q.is_viewable(user):
         return HttpResponseForbidden()
 
-    sol = None
-    if request.method == 'POST':
+    sol = q.solved_by(user)
+    if request.method == 'POST' and not sol:
         form = SubmissionForm(request.POST)
         if form.is_valid():
             answer = form.cleaned_data['answer']
@@ -52,13 +57,22 @@ def question_view(request, question_id):
     hint = None
     if q.has_seen_hint.filter(pk=user.pk).exists():
         hint = q.hint
+
+    unlocked = Question.objects.filter(requires=q)
+    same_cat_unlocked = [next_q for next_q in unlocked if next_q.category == q.category]
+    else_unlocked = set(unlocked) - set(same_cat_unlocked)
+    unlocked = list(sorted(same_cat_unlocked)) + list(sorted(else_unlocked))
+
     context = {
         'question': q,
+        'formatted_question_text': markdown(q.full_text, extras=getattr(settings, 'MARKDOWN_EXTRAS', [])),
         'solution': sol,
         'attempts': attempts,
         'form': form,
         'hint_url': reverse('ctf:hint', kwargs=dict(question_id=q.id)) if q.hint else None,
         'hint': hint,
+        'files': q.files.all(),
+        'unlocked_questions': unlocked,
     }
     return render(request, 'ctf/question.html', context)
 
@@ -83,15 +97,18 @@ def problem_overview(request):
              len(category.questions.all()),
              len([q for q in category.questions.all() if q.solved_by(request.user)])
              )
-            for category in sorted(categories, key=lambda c: c.order)]
-    context = {'categories': cats}
+            for category in sorted(categories)]
+    context = {
+        'categories': cats,
+        'next_question': Question.next_question(request.user, questions)
+    }
     return render(request, 'ctf/problems.html', context)
 
 
 @login_required()
 def category_view(request, category_id):
     cat = get_object_or_404(Category, id=category_id)
-    questions = sorted([q for q in cat.questions.all() if q.is_viewable(request.user)], key=lambda q: q.order)
+    questions = sorted([q for q in cat.questions.all() if q.is_viewable(request.user)])
     question_solution_pairs = [(q, q.solved_by(request.user)) for q in questions]
     context = {
         'category': cat,
@@ -101,18 +118,39 @@ def category_view(request, category_id):
     return render(request, 'ctf/category.html', context)
 
 
-@login_required()
 def file_download(request, file_id):
-    f = get_object_or_404(File, id=file_id)
-    usr = request.user
-    if not f.is_viewable(usr):
-        return HttpResponseForbidden()
+    print("Attempting to download file '{}'".format(file_id))
+    if isinstance(file_id, int):
+        f = File.objects.get(id=file_id)
+        if not f:
+            return HttpResponseNotFound("Attempted to get invalid file id {}".format(file_id))
+    elif isinstance(file_id, str):
+        try:
+            f = next(f for f in File.objects.all() if f.content.name == file_id)
+        except StopIteration:
+            return HttpResponseNotFound("Attempted to get invalid file path {}".format(file_id))
+    else:
+        return HttpResponseNotFound("Unknown type for file id: {}".format(type(file_id)))
 
-    filename = f.content.name.split('/')[-1]
-    response = HttpResponse(f.name, content_type='text/plain')
-    response['Content-Disposition'] = 'attachment; filename="%s"' % filename
+    # # TODO: Figure out if this is necessary... if so, how to authenticate notebooks for auto-downloading?
+    # usr = request.user
+    # if not f.is_viewable(usr):
+    #     return HttpResponseForbidden()
 
-    return response
+    path = os.path.join(settings.MEDIA_ROOT, f.content.name)
+    extension = path.partition('.')[-1]
+    if os.path.exists(path):
+        with open(path, 'rb') as fp:
+            response = HttpResponse(fp.read(), content_type='text/plain')
+            response['Content-Disposition'] = 'attachment; filename="{}.{}"'.format(f.name, extension)
+
+            return response
+
+    return HttpResponseNotFound()
+
+
+def list_downloads(request):
+    return JsonResponse({'file_ids': [f.id for f in File.objects.all() if f.questions.count()]})
 
 
 @login_required()
@@ -126,6 +164,9 @@ def profile_overview(request):
              for u in users]
     users = list(sorted(users, key=lambda tup: tup[-1], reverse=True))
     context['users'] = users
+
+    
+
     return render(request, 'ctf/profiles.html', context)
 
 

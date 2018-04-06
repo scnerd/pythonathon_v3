@@ -25,7 +25,7 @@ SECRET_KEY = '3ds#)t0=6y97$qihq96u6=8^bmb*tmyc**fn92kds_#rf0-jg&'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = bool(int(os.environ.get('DEBUGMODE', int(True))))
 
-ALLOWED_HOSTS = ['localhost', 'pythonathon']
+ALLOWED_HOSTS = ['localhost', 'pythonathon', 'nbproxy']
 if 'VIRTUAL_HOST' in os.environ:
     ALLOWED_HOSTS += [h.strip() for h in os.environ['VIRTUAL_HOST'].split(',')]
 
@@ -41,11 +41,10 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'bootstrap4',
-    'revproxy',
     'oauth2_provider',
     'corsheaders',
     'graphene_django',
-    'captcha',
+    'snowpenguin.django.recaptcha2',
 ]
 
 GRAPHENE = {
@@ -90,8 +89,6 @@ TEMPLATES = [
         },
     },
 ]
-
-
 
 WSGI_APPLICATION = 'pythonathon_v3.wsgi.application'
 
@@ -162,6 +159,23 @@ STATIC_URL = '/static/'
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 # STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)
 
+MEDIA_ROOT = os.environ.get('FILE_STORAGE', '')
+MEDIA_URL = '/dl/'
+
 RECAPTCHA_PUBLIC_KEY = open(os.environ['RECAPTCHA_PUBLICKEY_PATH']).read()
 RECAPTCHA_PRIVATE_KEY = open(os.environ['RECAPTCHA_PRIVATEKEY_PATH']).read()
 NOCAPTCHA = True
+
+MARKDOWN_EXTRAS = [
+    'break-on-newline',
+    'code-friendly',
+    'fenced-code-blocks',
+]
+
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+user_path = os.environ.get('GMAIL_USER_PATH', None)
+if user_path and os.path.exists(user_path):
+    EMAIL_HOST_USER = open(os.environ['GMAIL_USER_PATH']).read()
+    EMAIL_HOST_PASSWORD = open(os.environ['GMAIL_PWD_PATH']).read()

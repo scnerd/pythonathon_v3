@@ -4,7 +4,9 @@ django-bootstrap4
 django-revproxy
 django-oauth-toolkit
 django-cors-middleware
-django-recaptcha
+django-recaptcha2
+markdown2
+pygments
 uwsgi
 whitenoise
 plotly

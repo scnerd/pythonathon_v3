@@ -3,7 +3,7 @@
 {% block title %}Category: {{ category.name }}{% endblock %}
 
 {% block content %}
-<h1>{{ category.name }}</h1>
+<h1><a href="{% url 'ctf:problems' %}"><i class="fas fa-level-up-alt fa-flip-horizontal"></i> Categories</a> / {{ category.name }}</h1>
 
 <table class="table table-striped">
     <thead>
@@ -16,7 +16,7 @@
     {% for q, sol in question_solution_pairs %}
     <tr>
         <td><a href="{% url 'ctf:question' q.id %}">{{ q.name }}</a></td>
-        <td>{% if sol %}{{ sol.net_score }}{% else %}Not yet solved{% endif %}</td>
+        <td>{% if sol %}{{ sol.net_score }}{% endif %}</td>
     </tr>
     {% endfor %}
     </tbody>
