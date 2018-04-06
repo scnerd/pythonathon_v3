@@ -3,6 +3,12 @@
 {% block title %}Profiles{% endblock %}
 
 {% block content %}
+{% if timeline %}
+<div style="width:100%">
+{{ graph|safe }}
+</div>
+{% endif %}
+
 <table class="table table-striped">
     <thead>
     <tr>

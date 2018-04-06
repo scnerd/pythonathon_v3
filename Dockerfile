@@ -1,6 +1,11 @@
 FROM python:3.6-alpine
 RUN apk add --no-cache bash
 
+EXPOSE 8000
+EXPOSE 3031
+
+WORKDIR /usr/src/pythonathon
+
 # psycopg2 for postgresql support
 RUN apk update \
 #  && apk add jpeg-dev zlib-dev \
@@ -8,10 +13,6 @@ RUN apk update \
   && apk add postgresql-dev \
   && pip install psycopg2 uwsgi \
   && apk del build-deps
-
-EXPOSE 8000
-EXPOSE 3031
-WORKDIR /usr/src/pythonathon
 
 COPY requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt

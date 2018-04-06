@@ -165,7 +165,8 @@ def profile_overview(request):
     users = list(sorted(users, key=lambda tup: tup[-1], reverse=True))
     context['users'] = users
 
-    
+    from .plots import leaderboard_timeline
+    context['timeline'] = leaderboard_timeline(request.user)
 
     return render(request, 'ctf/profiles.html', context)
 
