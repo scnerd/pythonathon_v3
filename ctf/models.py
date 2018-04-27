@@ -1,5 +1,4 @@
 from django.db import models
-from django.contrib.auth import get_user_model
 from django.utils.timezone import now
 from django.conf import settings
 
@@ -17,8 +16,8 @@ class Question(models.Model):
     requires = models.ForeignKey('Question', on_delete=models.SET_NULL, related_name='questions_required_by', blank=True, null=True)
     category = models.ForeignKey('Category', on_delete=models.SET_NULL, related_name='questions', null=True)
     files = models.ManyToManyField('File', related_name='questions', blank=True)
-    solvers = models.ManyToManyField(get_user_model(), related_name='questions_attempted', through='Solution', blank=True)
-    has_seen_hint = models.ManyToManyField(get_user_model(), related_name='hints_used', blank=True)
+    solvers = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='questions_attempted', through='Solution', blank=True)
+    has_seen_hint = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='hints_used', blank=True)
 
     @property
     def order(self):
@@ -111,7 +110,7 @@ class Solution(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True, blank=True)
     success = models.BooleanField()
 
-    user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, related_name='solutions')
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='solutions')
     question = models.ForeignKey('Question', on_delete=models.CASCADE, related_name='solutions')
 
     class Meta:
@@ -130,7 +129,7 @@ class Competition(models.Model):
     start = models.DateTimeField()
     end = models.DateTimeField()
 
-    competitors = models.ManyToManyField(get_user_model(), related_name='competitions', blank=True)
+    competitors = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='competitions', blank=True)
 
     @property
     def is_live(self):
